@@ -71,7 +71,7 @@ One row per customer; customer attributes support demographic and geographic bre
 | Country | Text | Visible | Country. |
 | Continent | Text | Visible | Continent. |
 | Birthday | Date/time | Visible | Customer date of birth. |
-| Age | Whole number | Visible | Calculated as years between Birthday and TODAY(); it changes as the model is queried/refreshed over time. |
+| Age | Whole number | Visible | Calculated as years between Birthday and TODAY(); as a calculated column, its value updates when the model is refreshed. |
 
 ### Product
 
