@@ -7,7 +7,6 @@ table 'Currency Conversion'
 
 		/// Returns the measure as stored, mixing the local currencies of each sales line. Use it only to reconcile against the source data, not to compare amounts across countries.
 		calculationItem 'As Reported (Local)' = SELECTEDMEASURE()
-			ordinal: 0
 
 		/// Converts currency measures to euro using the EUR rate of each sales date.
 		calculationItem EUR =
@@ -34,7 +33,7 @@ table 'Currency Conversion'
 				    )
 				RETURN
 				    IF ( _isCurrency, _converted, SELECTEDMEASURE () )
-			ordinal: 1
+
 			formatStringDefinition =
 					IF (
 					    CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "$" )
@@ -69,7 +68,7 @@ table 'Currency Conversion'
 				    )
 				RETURN
 				    IF ( _isCurrency, _converted, SELECTEDMEASURE () )
-			ordinal: 2
+
 			formatStringDefinition =
 					IF (
 					    CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "$" )
@@ -104,7 +103,7 @@ table 'Currency Conversion'
 				    )
 				RETURN
 				    IF ( _isCurrency, _converted, SELECTEDMEASURE () )
-			ordinal: 3
+
 			formatStringDefinition =
 					IF (
 					    CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "$" )
@@ -133,7 +132,4 @@ table 'Currency Conversion'
 		sourceColumn: Ordinal
 
 		annotation SummarizationSetBy = Automatic
-
-	partition 'Currency Conversion' = calculationGroup
-		mode: import
 

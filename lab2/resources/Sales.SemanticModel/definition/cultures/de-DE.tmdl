@@ -15,7 +15,7 @@ cultureInfo de-DE
 					caption: Datum
 				column 'Month Name'
 					caption: Monatsname
-				column 'Year-Month'
+				column Year-Month
 					caption: Jahr-Monat
 				column 'Week Number'
 					caption: Kalenderwoche
@@ -29,74 +29,38 @@ cultureInfo de-DE
 					caption: Geschäftsjahr
 				column 'Fiscal Quarter'
 					caption: Geschäftsquartal
-				hierarchy 'Year-Month-Day'
+				hierarchy Year-Month-Day
 					caption: Jahr-Monat-Tag
-			table Customer
-				caption: Kunde
-				measure '# Customers'
-					caption: Anzahl Kunden
-					description: Anzahl der Kunden im aktuellen Filterkontext. Diese Kennzahl beschreibt den Kundenbestand, nicht nur Kunden mit einem Kauf.
-				column CustomerKey
-					caption: Kundenschlüssel
-				column Gender
-					caption: Geschlecht
-				column Customer
-					caption: Kunde
-				column Address
-					caption: Adresse
-				column City
-					caption: Stadt
-				column 'State Code'
-					caption: Bundesstaatcode
-				column State
-					caption: Bundesstaat oder Region
-				column 'Zip Code'
-					caption: Postleitzahl
-				column 'Country Code'
-					caption: Ländercode
-				column Country
-					caption: Land
-				column Continent
-					caption: Kontinent
-				column Birthday
-					caption: Geburtsdatum
-				column Age
-					caption: Alter
-			table Product
-				caption: Produkt
-				measure '# Products'
-					caption: Anzahl Produkte
-					description: Anzahl der Produkte im aktuellen Filterkontext. Sie zeigt den Produktkatalog, nicht verkaufte Einheiten oder Verkaufsvorgänge.
-				column Product
-					caption: Produkt
-				column ProductKey
-					caption: Produktschlüssel
-				column 'Product Code'
-					caption: Produktcode
-				column Manufacturer
-					caption: Hersteller
-				column Brand
-					caption: Marke
-				column Color
-					caption: Farbe
-				column 'Weight Unit Measure'
-					caption: Gewichtseinheit
-				column Weight
-					caption: Gewicht
-				column 'Unit Cost'
-					caption: Stückkosten
-				column 'Unit Price'
-					caption: Stückpreis
-				column 'Subcategory Code'
-					caption: Unterkategoriecode
-				column Subcategory
-					caption: Unterkategorie
-				column 'Category Code'
-					caption: Kategoriecode
-				column Category
-					caption: Kategorie
 			table Sales
 				caption: Verkäufe
+				column 'Order Number'
+					caption: Bestellnummer
+				column 'Line Number'
+					caption: Positionsnummer
+				column 'Order Date'
+					caption: Bestelldatum
+				column 'Delivery Date'
+					caption: Lieferdatum
+				column CustomerKey
+					caption: Kundenschlüssel
+				column StoreKey
+					caption: Filialschlüssel
+				column ProductKey
+					caption: Produktschlüssel
+				column 'Unit Cost'
+					caption: Stückkosten
+				column 'Currency Code'
+					caption: Währungscode
+				column 'Exchange Rate'
+					caption: Wechselkurs
+				column Environment
+					caption: Umgebung
+				column Time
+					caption: Uhrzeit
+				column Quantity
+					caption: Menge
+				column 'Net Price'
+					caption: Nettopreis
 				measure '# Customers (w/ Sales)'
 					caption: Kunden mit Verkäufen
 					description: Anzahl unterschiedlicher Kunden mit Verkaufspositionen im aktuellen Filterkontext. Diese Kennzahl zeigt die Kundenreichweite und ist keine Anzahl von Bestellungen oder Warenkörben.
@@ -127,39 +91,72 @@ cultureInfo de-DE
 				measure Cost
 					caption: Warenkosten
 					description: Kosten der verkauften Einheiten, berechnet als Menge mal Stückkosten je Verkaufsposition. Dies sind Warenkosten, nicht Nettoumsatz oder Bruttoeinnahmen.
-				column 'Order Number'
-					caption: Bestellnummer
-				column 'Line Number'
-					caption: Positionsnummer
-				column 'Order Date'
-					caption: Bestelldatum
-				column 'Delivery Date'
-					caption: Lieferdatum
-				column CustomerKey
-					caption: Kundenschlüssel
-				column StoreKey
-					caption: Filialschlüssel
+			table Product
+				caption: Produkt
+				column Product
+					caption: Produkt
 				column ProductKey
 					caption: Produktschlüssel
+				column 'Product Code'
+					caption: Produktcode
+				column Manufacturer
+					caption: Hersteller
+				column Brand
+					caption: Marke
+				column Color
+					caption: Farbe
+				column 'Weight Unit Measure'
+					caption: Gewichtseinheit
+				column Weight
+					caption: Gewicht
 				column 'Unit Cost'
 					caption: Stückkosten
-				column 'Currency Code'
-					caption: Währungscode
-				column 'Exchange Rate'
-					caption: Wechselkurs
-				column Environment
-					caption: Umgebung
-				column Time
-					caption: Uhrzeit
-				column Quantity
-					caption: Menge
-				column 'Net Price'
-					caption: Nettopreis
+				column 'Unit Price'
+					caption: Stückpreis
+				column 'Subcategory Code'
+					caption: Unterkategoriecode
+				column Subcategory
+					caption: Unterkategorie
+				column 'Category Code'
+					caption: Kategoriecode
+				column Category
+					caption: Kategorie
+				measure '# Products'
+					caption: Anzahl Produkte
+					description: Anzahl der Produkte im aktuellen Filterkontext. Sie zeigt den Produktkatalog, nicht verkaufte Einheiten oder Verkaufsvorgänge.
+			table Customer
+				caption: Kunde
+				column CustomerKey
+					caption: Kundenschlüssel
+				column Gender
+					caption: Geschlecht
+				column Customer
+					caption: Kunde
+				column Address
+					caption: Adresse
+				column City
+					caption: Stadt
+				column 'State Code'
+					caption: Bundesstaatcode
+				column State
+					caption: Bundesstaat oder Region
+				column 'Zip Code'
+					caption: Postleitzahl
+				column 'Country Code'
+					caption: Ländercode
+				column Country
+					caption: Land
+				column Continent
+					caption: Kontinent
+				column Birthday
+					caption: Geburtsdatum
+				column Age
+					caption: Alter
+				measure '# Customers'
+					caption: Anzahl Kunden
+					description: Anzahl der Kunden im aktuellen Filterkontext. Diese Kennzahl beschreibt den Kundenbestand, nicht nur Kunden mit einem Kauf.
 			table Store
 				caption: Filiale
-				measure '# Stores'
-					caption: Anzahl Filialen
-					description: Anzahl der Filialen im aktuellen Filterkontext. Alle Statuswerte sind enthalten, sofern das Feld Status nicht gefiltert wird.
 				column StoreKey
 					caption: Filialschlüssel
 				column 'Store Code'
@@ -178,3 +175,7 @@ cultureInfo de-DE
 					caption: Schließungsdatum
 				column Status
 					caption: Status
+				measure '# Stores'
+					caption: Anzahl Filialen
+					description: Anzahl der Filialen im aktuellen Filterkontext. Alle Statuswerte sind enthalten, sofern das Feld Status nicht gefiltert wird.
+
