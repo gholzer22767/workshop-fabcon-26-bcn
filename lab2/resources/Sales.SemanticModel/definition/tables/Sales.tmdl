@@ -1,26 +1,32 @@
 table Sales
 	lineageTag: 97143e5b-7736-4fcb-8042-26b92b1f5684
 
+	/// Counts distinct customers with sales lines in the current filter context. This is customer reach, not a count of orders or baskets.
 	measure '# Customers (w/ Sales)' = DISTINCTCOUNT('Sales'[CustomerKey])
 		formatString: #,##0
 		lineageTag: 4ec872f0-a42d-4aa9-bf6b-1ca7c4916336
 
+	/// Totals individual product units sold across sales lines in the current filter context. Units are especially useful alongside revenue during January clearance, when volume can rise while margins remain low.
 	measure 'Sales Qty' = sum('Sales'[Quantity])
 		formatString: #,##0
 		lineageTag: c2ff8d96-2f03-4005-84df-91458625b73b
 
+	/// Multiplies each sales line's quantity by its net price and sums the results. Per NRG reporting convention, this is net revenue after discounts and returns, not gross sales.
 	measure 'Sales Amount' = SUMX('Sales', 'Sales'[Quantity] * 'Sales'[Net Price])
 		formatString: $ #,##0
 		lineageTag: a8e95485-02a2-4525-b02a-b2418fbdbe4c
 
+	/// Returns net sales for the same calendar-date period one year earlier, when the current period has positive net sales. This is a calendar year-over-year comparison, not a February–January fiscal-year shift.
 	measure 'Sales Amount (LY)' = IF ([Sales Amount] > 0, CALCULATE([Sales Amount], SAMEPERIODLASTYEAR('Calendar'[Date])))
 		formatString: "€"#,0.###############;("€"#,0.###############);"€"#,0.###############
 		lineageTag: 3fa889ae-64b9-4a6e-b0e6-c81c90fd32bf
 
+	/// Averages net sales per date with sales in the current Calendar date selection. This daily view helps compare periods of different lengths without treating revenue as gross sales.
 	measure 'Sales Amount Avg per Day' = AVERAGEX(VALUES('Calendar'[Date]), [Sales Amount])
 		formatString: $ #,##0
 		lineageTag: 65842ce7-7176-4106-868e-2e83aaa62b4c
 
+	/// Calculates margin by summing quantity multiplied by net price less unit cost across sales lines. Because it uses net price, it reflects the impact of discounts and returns rather than a gross-sales margin.
 	measure Margin =
 			SUMX (
 			    Sales,
@@ -30,10 +36,12 @@ table Sales
 		formatString: $ #,##0
 		lineageTag: d22a262b-b776-4ccd-b9bd-7ef9c90eba51
 
+	/// Counts rows in the Sales table in the current filter context, so it counts sales lines rather than distinct orders or customer baskets.
 	measure '# Sales' = COUNTROWS('Sales')
 		formatString: #,##02
 		lineageTag: 67791bd1-5f33-4a29-a9ac-be0ad2453fcf
 
+	/// Averages daily net sales for dates with sales in the trailing 12 months ending on the latest date in the current Calendar selection, and returns blank when the window starts after the latest available sales date. The rolling calendar window can cross NRG's February–January fiscal-year boundary.
 	measure 'Sales Amount (12M average)' =
 			
 			VAR v_selDate =
@@ -51,6 +59,7 @@ table Sales
 		formatString: $ #,##0
 		lineageTag: 7fd60f7e-287e-46c3-a745-24c4507bc77b
 
+	/// Averages daily net sales for dates with sales in the trailing 6 months ending on the latest date in the current Calendar selection, and returns blank when the window starts after the latest available sales date. This rolling calendar window can cross NRG's February–January fiscal-year boundary.
 	measure 'Sales Amount (6M average)' =
 			VAR v_selDate =
 			    MAX ( 'Calendar'[Date] )
@@ -67,6 +76,7 @@ table Sales
 		formatString: $ #,##0
 		lineageTag: 9a48bea0-e5fb-40fa-9e81-f61288e31a02
 
+	/// Totals cost of units sold by multiplying quantity by unit cost on each sales line. This is merchandise cost, not net sales or gross receipts.
 	measure Cost = SUMX ( Sales, Sales[Quantity] * Sales[Unit Cost] )
 		formatString: $ #,##0
 		lineageTag: 3e5cb67e-a411-476f-ad34-7ec10dfd084d
@@ -294,4 +304,3 @@ table Sales
 	annotation PBI_ResultType = Table
 
 	annotation PBI_NavigationStepName = Navigation
-

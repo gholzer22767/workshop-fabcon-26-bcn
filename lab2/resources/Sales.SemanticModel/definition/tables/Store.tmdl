@@ -1,6 +1,7 @@
 table Store
 	lineageTag: 54d5f884-12db-4e03-a120-08cd725db2c4
 
+	/// Counts store records in the current filter context. All statuses are included unless the report or user filters the Status field.
 	measure '# Stores' = COUNTROWS('Store')
 		formatString: #,##0
 		lineageTag: 868df9c8-f579-47d1-a776-3d29121df7c7
@@ -125,4 +126,3 @@ table Store
 	annotation PBI_ResultType = Table
 
 	annotation PBI_NavigationStepName = Navigation
-
