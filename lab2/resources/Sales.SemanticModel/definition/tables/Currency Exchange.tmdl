@@ -1,0 +1,130 @@
+/// Daily currency exchange rates loaded from RAW-CurrencyExchange.csv. Each row gives the rate used to convert an amount from the source currency into the reporting currency on a given date. The source file publishes month-end rates until December 2019 and daily rates afterwards, so the query expands them to a complete daily grain by carrying the last known rate forward. This is a technical conversion table used by the Currency Conversion calculation group; it is intentionally not related to other tables.
+table 'Currency Exchange'
+	isHidden
+	lineageTag: 1f738143-aa88-492b-b1e8-430433fd00c7
+
+	/// Date the exchange rate applies to, expanded to a daily grain from the published month-end and daily source rates.
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: cdc0ccb5-18ec-461f-a9a7-0e860c48e421
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Currency the amount is converted from. Matches the Currency Code recorded on each sales line.
+	column 'From Currency'
+		dataType: string
+		lineageTag: ab07224e-87f4-4102-a37b-4370ce8742fb
+		summarizeBy: none
+		sourceColumn: From Currency
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Reporting currency the amount is converted to. The source file provides EUR, USD and GBP.
+	column 'To Currency'
+		dataType: string
+		lineageTag: 1aebb542-1f51-4e2f-b779-84bc362af08e
+		summarizeBy: none
+		sourceColumn: To Currency
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Multiplier that converts one unit of the source currency into the reporting currency on the given date.
+	column 'Exchange Rate'
+		dataType: double
+		lineageTag: 9660e592-d449-40b4-bd14-cc4e09629192
+		summarizeBy: none
+		sourceColumn: Exchange Rate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Currency Exchange' = m
+		mode: import
+		source =
+				let
+					// RAW data
+					Source = Csv.Document(
+						Web.Contents(HttpSource, [RelativePath = "RAW-CurrencyExchange.csv"]),
+						[
+							Delimiter = ",",
+							Columns = 4,
+							Encoding = 65001,
+							QuoteStyle = QuoteStyle.None
+						]
+					),
+					#"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+					#"Changed Column Types" = Table.TransformColumnTypes(
+						#"Promoted Headers",
+						{
+							{"Date", type date},
+							{"FromCurrency", type text},
+							{"ToCurrency", type text},
+							{"Exchange", type number}
+						}
+					),
+					#"Renamed Columns" = Table.RenameColumns(
+						#"Changed Column Types",
+						{
+							{"FromCurrency", "From Currency"},
+							{"ToCurrency", "To Currency"},
+							{"Exchange", "Exchange Rate"}
+						}
+					),
+					// The source publishes month-end rates until Dec 2019 and daily rates afterwards.
+					// Expand every currency pair to the full Calendar range so each sales date finds a rate.
+					StartDate = #date(2017, 1, 1),
+					EndDate = #date(2021, 12, 31),
+					AllDates = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1, 0, 0, 0)),
+					CurrencyPairs = Table.Distinct(
+						Table.SelectColumns(#"Renamed Columns", {"From Currency", "To Currency"})
+					),
+					#"Added Dates" = Table.AddColumn(CurrencyPairs, "Date", each AllDates),
+					#"Expanded Dates" = Table.ExpandListColumn(#"Added Dates", "Date"),
+					#"Merged Source Rates" = Table.NestedJoin(
+						#"Expanded Dates",
+						{"From Currency", "To Currency", "Date"},
+						#"Renamed Columns",
+						{"From Currency", "To Currency", "Date"},
+						"SourceRate",
+						JoinKind.LeftOuter
+					),
+					#"Added Exchange Rate" = Table.AddColumn(
+						#"Merged Source Rates",
+						"Exchange Rate",
+						each try [SourceRate]{0}[Exchange Rate] otherwise null
+					),
+					#"Removed Source Rate" = Table.RemoveColumns(#"Added Exchange Rate", {"SourceRate"}),
+					// Fill up first (dates before the first published rate), then down (last known rate),
+					// per currency pair so rates never leak across pairs.
+					#"Grouped Pairs" = Table.Group(
+						#"Removed Source Rate",
+						{"From Currency", "To Currency"},
+						{
+							{
+								"Rates",
+								each Table.FillDown(
+									Table.FillUp(Table.Sort(_, {{"Date", Order.Ascending}}), {"Exchange Rate"}),
+									{"Exchange Rate"}
+								),
+								type table
+							}
+						}
+					),
+					#"Filled Rates" = Table.Combine(#"Grouped Pairs"[Rates]),
+					#"Changed Final Types" = Table.TransformColumnTypes(
+						#"Filled Rates",
+						{{"Date", type date}, {"From Currency", type text}, {"To Currency", type text}, {"Exchange Rate", type number}}
+					)
+				in
+					#"Changed Final Types"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

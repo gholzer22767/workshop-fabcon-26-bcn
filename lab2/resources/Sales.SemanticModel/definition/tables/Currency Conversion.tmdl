@@ -1,0 +1,139 @@
+/// Converts any currency measure into a single reporting currency. Sales lines are recorded in the local currency of the order, so amounts must be converted before they can be compared or summed across countries. Each item translates the selected measure with the exchange rate of the sales date, using the Currency Exchange table. Non-currency measures such as quantities and counts are returned unchanged.
+table 'Currency Conversion'
+	lineageTag: e4a101c5-cdcb-48a6-b685-3e685b7fdbfd
+
+	calculationGroup
+		precedence: 10
+
+		/// Returns the measure as stored, mixing the local currencies of each sales line. Use it only to reconcile against the source data, not to compare amounts across countries.
+		calculationItem 'As Reported (Local)' = SELECTEDMEASURE()
+			ordinal: 0
+
+		/// Converts currency measures to euro using the EUR rate of each sales date.
+		calculationItem EUR =
+				VAR _target = "EUR"
+				VAR _isCurrency =
+				    CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "$" )
+				        || CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "€" )
+				        || CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "£" )
+				VAR _converted =
+				    SUMX (
+				        SUMMARIZE ( 'Sales', 'Calendar'[Date], 'Sales'[Currency Code] ),
+				        VAR _date = 'Calendar'[Date]
+				        VAR _from = 'Sales'[Currency Code]
+				        VAR _rate =
+				            CALCULATE (
+				                SELECTEDVALUE ( 'Currency Exchange'[Exchange Rate] ),
+				                REMOVEFILTERS ( 'Currency Exchange' ),
+				                'Currency Exchange'[Date] = _date,
+				                'Currency Exchange'[From Currency] = _from,
+				                'Currency Exchange'[To Currency] = _target
+				            )
+				        RETURN
+				            CALCULATE ( SELECTEDMEASURE () ) * _rate
+				    )
+				RETURN
+				    IF ( _isCurrency, _converted, SELECTEDMEASURE () )
+			ordinal: 1
+			formatStringDefinition =
+					IF (
+					    CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "$" )
+					        || CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "€" )
+					        || CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "£" ),
+					    """€""#,##0",
+					    SELECTEDMEASUREFORMATSTRING ()
+					)
+
+		/// Converts currency measures to US dollar using the USD rate of each sales date.
+		calculationItem USD =
+				VAR _target = "USD"
+				VAR _isCurrency =
+				    CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "$" )
+				        || CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "€" )
+				        || CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "£" )
+				VAR _converted =
+				    SUMX (
+				        SUMMARIZE ( 'Sales', 'Calendar'[Date], 'Sales'[Currency Code] ),
+				        VAR _date = 'Calendar'[Date]
+				        VAR _from = 'Sales'[Currency Code]
+				        VAR _rate =
+				            CALCULATE (
+				                SELECTEDVALUE ( 'Currency Exchange'[Exchange Rate] ),
+				                REMOVEFILTERS ( 'Currency Exchange' ),
+				                'Currency Exchange'[Date] = _date,
+				                'Currency Exchange'[From Currency] = _from,
+				                'Currency Exchange'[To Currency] = _target
+				            )
+				        RETURN
+				            CALCULATE ( SELECTEDMEASURE () ) * _rate
+				    )
+				RETURN
+				    IF ( _isCurrency, _converted, SELECTEDMEASURE () )
+			ordinal: 2
+			formatStringDefinition =
+					IF (
+					    CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "$" )
+					        || CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "€" )
+					        || CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "£" ),
+					    """$""#,##0",
+					    SELECTEDMEASUREFORMATSTRING ()
+					)
+
+		/// Converts currency measures to British pound using the GBP rate of each sales date.
+		calculationItem GBP =
+				VAR _target = "GBP"
+				VAR _isCurrency =
+				    CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "$" )
+				        || CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "€" )
+				        || CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "£" )
+				VAR _converted =
+				    SUMX (
+				        SUMMARIZE ( 'Sales', 'Calendar'[Date], 'Sales'[Currency Code] ),
+				        VAR _date = 'Calendar'[Date]
+				        VAR _from = 'Sales'[Currency Code]
+				        VAR _rate =
+				            CALCULATE (
+				                SELECTEDVALUE ( 'Currency Exchange'[Exchange Rate] ),
+				                REMOVEFILTERS ( 'Currency Exchange' ),
+				                'Currency Exchange'[Date] = _date,
+				                'Currency Exchange'[From Currency] = _from,
+				                'Currency Exchange'[To Currency] = _target
+				            )
+				        RETURN
+				            CALCULATE ( SELECTEDMEASURE () ) * _rate
+				    )
+				RETURN
+				    IF ( _isCurrency, _converted, SELECTEDMEASURE () )
+			ordinal: 3
+			formatStringDefinition =
+					IF (
+					    CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "$" )
+					        || CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "€" )
+					        || CONTAINSSTRING ( SELECTEDMEASUREFORMATSTRING (), "£" ),
+					    """£""#,##0",
+					    SELECTEDMEASUREFORMATSTRING ()
+					)
+
+	/// Reporting currency applied to the selected measure: As Reported (Local), EUR, USD or GBP.
+	column Currency
+		dataType: string
+		lineageTag: 1e19347c-8061-4a8b-8673-dc8bbe68bf45
+		summarizeBy: none
+		sourceColumn: Name
+		sortByColumn: Ordinal
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ordinal
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d231b1a8-21a2-4b18-a85e-826a9fb70f0c
+		summarizeBy: sum
+		sourceColumn: Ordinal
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Currency Conversion' = calculationGroup
+		mode: import
+
