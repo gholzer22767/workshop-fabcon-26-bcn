@@ -1,0 +1,180 @@
+cultureInfo de-DE
+	translations
+		model Model
+			table Calendar
+				caption: Kalender
+				column Day
+					caption: Tag
+				column Month
+					caption: Monat
+				column Quarter
+					caption: Quartal
+				column Year
+					caption: Jahr
+				column Date
+					caption: Datum
+				column 'Month Name'
+					caption: Monatsname
+				column 'Year-Month'
+					caption: Jahr-Monat
+				column 'Week Number'
+					caption: Kalenderwoche
+				column 'Day of Week'
+					caption: Wochentag (Nummer)
+				column 'Day Name'
+					caption: Wochentag
+				column 'Is Weekend'
+					caption: Ist Wochenende
+				column 'Fiscal Year'
+					caption: Geschäftsjahr
+				column 'Fiscal Quarter'
+					caption: Geschäftsquartal
+				hierarchy 'Year-Month-Day'
+					caption: Jahr-Monat-Tag
+			table Customer
+				caption: Kunde
+				measure '# Customers'
+					caption: Anzahl Kunden
+					description: Anzahl der Kunden im aktuellen Filterkontext. Diese Kennzahl beschreibt den Kundenbestand, nicht nur Kunden mit einem Kauf.
+				column CustomerKey
+					caption: Kundenschlüssel
+				column Gender
+					caption: Geschlecht
+				column Customer
+					caption: Kunde
+				column Address
+					caption: Adresse
+				column City
+					caption: Stadt
+				column 'State Code'
+					caption: Bundesstaatcode
+				column State
+					caption: Bundesstaat oder Region
+				column 'Zip Code'
+					caption: Postleitzahl
+				column 'Country Code'
+					caption: Ländercode
+				column Country
+					caption: Land
+				column Continent
+					caption: Kontinent
+				column Birthday
+					caption: Geburtsdatum
+				column Age
+					caption: Alter
+			table Product
+				caption: Produkt
+				measure '# Products'
+					caption: Anzahl Produkte
+					description: Anzahl der Produkte im aktuellen Filterkontext. Sie zeigt den Produktkatalog, nicht verkaufte Einheiten oder Verkaufsvorgänge.
+				column Product
+					caption: Produkt
+				column ProductKey
+					caption: Produktschlüssel
+				column 'Product Code'
+					caption: Produktcode
+				column Manufacturer
+					caption: Hersteller
+				column Brand
+					caption: Marke
+				column Color
+					caption: Farbe
+				column 'Weight Unit Measure'
+					caption: Gewichtseinheit
+				column Weight
+					caption: Gewicht
+				column 'Unit Cost'
+					caption: Stückkosten
+				column 'Unit Price'
+					caption: Stückpreis
+				column 'Subcategory Code'
+					caption: Unterkategoriecode
+				column Subcategory
+					caption: Unterkategorie
+				column 'Category Code'
+					caption: Kategoriecode
+				column Category
+					caption: Kategorie
+			table Sales
+				caption: Verkäufe
+				measure '# Customers (w/ Sales)'
+					caption: Kunden mit Verkäufen
+					description: Anzahl unterschiedlicher Kunden mit Verkaufspositionen im aktuellen Filterkontext. Diese Kennzahl zeigt die Kundenreichweite und ist keine Anzahl von Bestellungen oder Warenkörben.
+				measure 'Sales Qty'
+					caption: Verkaufte Menge
+					description: Summe der verkauften Produkteinheiten über alle Verkaufspositionen im aktuellen Filterkontext.
+				measure 'Sales Amount'
+					caption: Nettoumsatz
+					description: Summe aus Menge mal Nettopreis über alle Verkaufspositionen. Entsprechend der NRG-Berichtskonvention ist dies der Nettoumsatz nach Rabatten und Retouren, nicht der Bruttoumsatz.
+				measure 'Sales Amount (LY)'
+					caption: Nettoumsatz (Vorjahr)
+					description: Nettoumsatz für denselben Kalenderzeitraum des Vorjahres, sofern der aktuelle Zeitraum einen positiven Nettoumsatz aufweist. Dies ist ein Kalenderjahresvergleich, keine Verschiebung des Geschäftsjahres von Februar bis Januar.
+				measure 'Sales Amount Avg per Day'
+					caption: Durchschnittlicher Nettoumsatz pro Tag
+					description: Durchschnittlicher Nettoumsatz pro Datum mit Verkäufen innerhalb der aktuellen Kalenderauswahl. So lassen sich Zeiträume unterschiedlicher Länge vergleichen.
+				measure Margin
+					caption: Marge
+					description: Marge aus Menge mal Nettopreis abzüglich Stückkosten über alle Verkaufspositionen. Sie berücksichtigt Rabatte und Retouren und basiert nicht auf dem Bruttoumsatz.
+				measure '# Sales'
+					caption: Anzahl Verkaufspositionen
+					description: Anzahl der Zeilen in der Verkaufstabelle im aktuellen Filterkontext. Gezählt werden Verkaufspositionen, nicht unterschiedliche Bestellungen oder Warenkörbe.
+				measure 'Sales Amount (12M average)'
+					caption: Nettoumsatz (12-Monats-Durchschnitt)
+					description: Durchschnittlicher täglicher Nettoumsatz der letzten 12 Monate bis zum letzten Datum der aktuellen Kalenderauswahl. Das rollierende Kalenderfenster kann die Grenze des Geschäftsjahres von Februar bis Januar überschreiten.
+				measure 'Sales Amount (6M average)'
+					caption: Nettoumsatz (6-Monats-Durchschnitt)
+					description: Durchschnittlicher täglicher Nettoumsatz der letzten 6 Monate bis zum letzten Datum der aktuellen Kalenderauswahl. Das rollierende Kalenderfenster kann die Grenze des Geschäftsjahres von Februar bis Januar überschreiten.
+				measure Cost
+					caption: Warenkosten
+					description: Kosten der verkauften Einheiten, berechnet als Menge mal Stückkosten je Verkaufsposition. Dies sind Warenkosten, nicht Nettoumsatz oder Bruttoeinnahmen.
+				column 'Order Number'
+					caption: Bestellnummer
+				column 'Line Number'
+					caption: Positionsnummer
+				column 'Order Date'
+					caption: Bestelldatum
+				column 'Delivery Date'
+					caption: Lieferdatum
+				column CustomerKey
+					caption: Kundenschlüssel
+				column StoreKey
+					caption: Filialschlüssel
+				column ProductKey
+					caption: Produktschlüssel
+				column 'Unit Cost'
+					caption: Stückkosten
+				column 'Currency Code'
+					caption: Währungscode
+				column 'Exchange Rate'
+					caption: Wechselkurs
+				column Environment
+					caption: Umgebung
+				column Time
+					caption: Uhrzeit
+				column Quantity
+					caption: Menge
+				column 'Net Price'
+					caption: Nettopreis
+			table Store
+				caption: Filiale
+				measure '# Stores'
+					caption: Anzahl Filialen
+					description: Anzahl der Filialen im aktuellen Filterkontext. Alle Statuswerte sind enthalten, sofern das Feld Status nicht gefiltert wird.
+				column StoreKey
+					caption: Filialschlüssel
+				column 'Store Code'
+					caption: Filialcode
+				column Country
+					caption: Land
+				column State
+					caption: Bundesstaat oder Region
+				column Store
+					caption: Filiale
+				column 'Square Meters'
+					caption: Quadratmeter
+				column 'Open Date'
+					caption: Eröffnungsdatum
+				column 'Close Date'
+					caption: Schließungsdatum
+				column Status
+					caption: Status

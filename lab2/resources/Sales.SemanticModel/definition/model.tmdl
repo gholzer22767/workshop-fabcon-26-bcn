@@ -22,4 +22,4 @@ ref table Customer
 ref table Store
 
 ref cultureInfo en-US
-
+ref cultureInfo de-DE
